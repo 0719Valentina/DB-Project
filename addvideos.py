@@ -8,9 +8,7 @@ videos_data = [
     (1, "2024-11-15", "Your name", "A video about Your name.", 100, 50, "/static/videos/Your name.mp4", "/static/thumbnails/Your name.jpeg"),
     (1, "2024-11-16", "go out", "A video about go out.", 200, 75, "/static/videos/go out.mp4", "/static/thumbnails/go out.jpeg"),
     (1, "2024-11-17", "mixed cutting of ZHZ", "A video about mixed cutting of ZHZ.", 300, 125, "/static/videos/mixed cutting of ZHZ.mp4", "/static/thumbnails/mixed cutting of ZHZ.jpeg"),
-    (1, "2024-11-18", "traditional Chinese opera of Zhou Shen", "A video about traditional Chinese opera of Zhou Shen.", 150, 80, "/static/videos/traditional Chinese opera of Zhou Shen.mp4", "/static/thumbnails/traditional Chinese opera of Zhou Shen.jpeg"),
     (1, "2024-11-19", "computer games", "A video about computer games.", 500, 300, "/static/videos/computer games.mp4", "/static/thumbnails/computer games.jpeg"),
-    (1, "2024-11-19", "Rainbow's smile of Wang Xinling", "A video about Rainbow's smile of Wang Xinling.", 250, 120, "/static/videos/Rainbow's smile of Wang Xinling.mp4", "/static/thumbnails/Rainbow's smile of Wang Xinling.jpeg"),
     (1, "2024-11-20", "Light Years Away of Deng Ziqi", "A video about Light Years Away of Deng Ziqi.", 800, 600, "/static/videos/Light Years Away of Deng Ziqi.mp4", "/static/thumbnails/Light Years Away of Deng Ziqi.jpeg")
 ]
 
