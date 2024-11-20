@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login/Register Page</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .form-container {
+        width: 300px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .form-container h2 {
+        text-align: center;
+    }
+    .form-container .form-group {
+        margin-bottom: 20px;
+    }
+    .form-container .form-control {
+        border-radius: 5px;
+    }
+    .form-container .btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    .form-container .btn:hover {
+        background-color: #0056b3;
+    }
+    .form-container .form-link {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+<div class="form-container" id="loginForm">
+    <h2>登录</h2>
+    <form>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div class="form-link">
+            <a href="javascript:void(0)" onclick="showRegisterForm()">还没有账号？点此注册</a>
+        </div>
+    </form>
+</div>
+
+<div class="form-container" id="registerForm" style="display:none;">
+    <h2>注册</h2>
+    <form>
+        <div class="form-group">
+            <label for="newUsername">用户名:</label>
+            <input type="text" class="form-control" id="newUsername" name="newUsername" required>
+        </div>
+        <div class="form-group">
+            <label for="newEmail">邮箱地址:</label>
+            <input type="email" class="form-control" id="newEmail" name="newEmail" required>
+        </div>
+        <div class="form-group">
+            <label for="newPassword">密码:</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">确认密码:</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" class="btn">注册</button>
+        <div class="form-link">
+            <a href="javascript:void(0)" onclick="showLoginForm()">已有帐号？点此登录</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+}
+
+function showRegisterForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+}
+
+// 登录表单提交事件处理函数
+function handleLoginSubmit(event) {
+    event.preventDefault(); // 阻止表单的默认提交行为
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    // 简单的验证示例
+    if (username === 'admin' && password === '123') {
+        window.location.href = 'index.html'; // 登录成功，跳转到index.html
+    } else {
+        alert('Invalid username or password'); // 登录失败，显示错误信息
+    }
+}
+
+// 为登录表单添加提交事件监听器
+document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
