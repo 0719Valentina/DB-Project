@@ -85,10 +85,10 @@ CREATE TABLE IF NOT EXISTS Comment (
 ''')
 
 # 插入初始数据到 Users 表
-cursor.execute('''
-INSERT INTO Users (Email, UserName, Password_Hash, Create_Time, Picture, Bio)
-VALUES (?, ?, ?, ?, ?, ?)
-''', ("user1@example.com", "user1", "hashed_password_123", "2024-11-01", "/static/images/user1.png", "Hello, I love videos!"))
+#cursor.execute('''
+#INSERT INTO Users (Email, UserName, Password_Hash, Create_Time, Picture, Bio)
+#VALUES (?, ?, ?, ?, ?, ?)
+#''', ("user3@example.com", "user3", "hashed_password_333", "2024-11-01", "/static/images/user1.png", "Hello, I love videos!"))
 
 # 插入初始数据到 Videos 表
 
