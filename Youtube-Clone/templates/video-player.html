@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+</head>
+<body>
+    <div class="video-player-container">
+        <video id="video-player" width="720" height="480" controls>
+            <source src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-details">
+            <div class="video-info">
+                <h1 id="video-title">Lorem ipsum dolor sit amet</h1>
+                <div class="video-views-likes">
+                    <div class="video-views" id="video-views">10M views</div>
+                    <div class="like-button-container">
+                        <button id="like-button" class="like-button">
+                            <span class="iconify heart-icon" data-icon="fa-solid:heart"></span>
+                        </button>                        
+                    </div>
+                </div>
+            </div>
+            <div class="author-info">
+                <img id="author-avatar" src="user.jpg" alt="Author Avatar">
+                <div class="author-name-subscribe">
+                    <p id="video-author">Channel Name</p>
+                    <button id="subscribe-button" class="subscribe-button">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
