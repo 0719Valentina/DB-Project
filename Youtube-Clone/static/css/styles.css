@@ -669,3 +669,107 @@ hr {
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	}
 }
+
+/*************video player***********/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.video-player-container {
+    width: 720px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative; /* To position the like button absolutely */
+}
+
+#video-player {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.video-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.video-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.video-views-likes {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.video-views {
+    margin-right: 10px;
+    color: #666;
+}
+
+.like-button-container {
+    display: flex;
+    align-items: center;
+}
+
+.like-button {
+    padding: 5px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent; /* 移除背景色 */
+    outline: none;
+}
+
+.heart-icon {
+    font-size: 24px; /* 根据需要调整图标大小 */
+    color: gray; /* 未点赞状态为灰色 */
+}
+
+.like-button.liked .heart-icon {
+    color: red; /* 点赞后为红色 */
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+.author-name-subscribe {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subscribe-button {
+    padding: 5px 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #3498db;
+    outline: none;
+    font-size: 14px;
+}
+
+.subscribe-button:hover {
+    background-color: #2980b9;
+}
