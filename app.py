@@ -272,5 +272,11 @@ def index():
     conn.close()
     return render_template('index.html', videos=videos)
 
+# 用户页面：展示用户信息或其他内容
+@app.route('/user')
+def user():
+    print("User function called")  # 在控制台输出信息
+    return render_template('user.html')  # 渲染 user.html
+
 if __name__ == "__main__":
     app.run(debug=True)
