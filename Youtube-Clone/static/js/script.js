@@ -21,14 +21,57 @@ function loadVideos() {
     });
 }
 
+// 订阅按钮逻辑
+function handleSubscribe() {
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    subscribeBtn.addEventListener('click', function(event) {
+        event.stopPropagation(); // 阻止事件冒泡
+        // 切换文本和背景颜色
+        this.textContent = this.textContent === '已订阅' ? 'Subscribe' : '已订阅';
+        this.style.backgroundColor = this.style.backgroundColor === '#808080' ? '#00b1fd' : '#808080';
+        this.disabled = false; // 启用按钮，允许重复点击
+    });
+}
+
+// 点赞按钮逻辑
+function handleLike() {
+    const likeBtn = document.getElementById('like-btn');
+    likeBtn.addEventListener('click', function(event) {
+        event.stopPropagation(); // 阻止事件冒泡
+        this.textContent = this.textContent === '已点赞' ? 'Like' : '已点赞';
+        this.style.backgroundColor = this.style.backgroundColor === '#ff0000' ? '#c0c0c0' : '#ff0000';
+        this.disabled = false; // 启用按钮，允许重复点击
+    });
+}
+
+function onPlayerShow() {
+    handleSubscribe();
+    handleLike();
+}
+
 function playVideo(src) {
     document.getElementById('video-source').src = src;
     document.getElementById('video-element').load();
+    //document.getElementById('video-title').textContent = title;
+    //document.getElementById('author-name').textContent = author.name;
     document.getElementById('video-player').style.display = 'block';
+    onPlayerShow(); // 显示播放器时，添加事件监听器
 }
 
 function closePlayer() {
+    const videoElement = document.getElementById('video-element');
+    // 暂停视频播放
+    videoElement.pause();
+    // 重置视频播放时间
+    videoElement.currentTime = 0;
+    // 隐藏视频播放器模态框
     document.getElementById('video-player').style.display = 'none';
+    // 重新启用订阅和点赞按钮
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    const likeBtn = document.getElementById('like-btn');
+    // 移除订阅和点赞按钮的事件监听器，避免重复添加
+    subscribeBtn.removeEventListener('click', handleSubscribe);
+    likeBtn.removeEventListener('click', handleLike);
 }
 
 document.getElementById('search').addEventListener('input', function() {
