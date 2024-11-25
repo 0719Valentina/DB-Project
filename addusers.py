@@ -14,17 +14,21 @@ def hash_password(plain_password):
 
 # 样例用户数据
 sample_users = [
-    ('user4@example.com', 'User4', hash_password("securePass456"), datetime.now().isoformat(), None, 'user4.jpg', 'Fan of technology and gaming.'),
-    ('user5@example.com', 'User5', hash_password("mySecret789"), datetime.now().isoformat(), None, 'user5.jpg', 'Passionate about art and design.'),
-    ('user6@example.com', 'User6', hash_password("fitness2023"), datetime.now().isoformat(), None, 'user6.jpg', 'Loves cooking and fitness activities.'),
-    ('user8@example.com', 'User8', hash_password("musicLover01"), datetime.now().isoformat(), None, 'user8.jpg', 'Aspiring musician and coffee enthusiast.'),
+    (1, 'user4@example.com', 'User4', "securePass456", datetime.now().isoformat(), None, 'user4.jpg', 'Fan of technology and gaming.', 'Viewer'),
+    (2, 'user5@example.com', 'User5', "mySecret789", datetime.now().isoformat(), None, 'user5.jpg', 'Passionate about art and design.', 'Uploader'),
+    (3, 'user6@example.com', 'User6', "fitness2023", datetime.now().isoformat(), None, 'user6.jpg', 'Loves cooking and fitness activities.', 'Viewer'),
+    (4, 'user8@example.com', 'User8', "musicLover01", datetime.now().isoformat(), None, 'user8.jpg', 'Aspiring musician and coffee enthusiast.', 'Admin'),
 ]
+
 # 插入到 Users 表
-for User in sample_users:
-    cursor.execute('''
-    INSERT INTO Users (Email, UserName, Password_Hash, Create_Time, Last_Login, Picture, Bio)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', User)
+for user in sample_users:
+    try:
+        cursor.execute('''
+        INSERT INTO Users (User_ID, Email, UserName, Password, Create_Time, Last_Login, Picture, Bio, Role)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', user)
+    except sqlite3.IntegrityError as e:
+        print(f"插入用户 {user[1]} 时出错：{e}")
 
 # 提交更改
 conn.commit()

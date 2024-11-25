@@ -52,7 +52,7 @@
 <body>
 <div class="form-container" id="loginForm">
     <h2>登录</h2>
-    <form>
+    <form action="/login", method="POST">
         <div class="form-group">
             <label for="username">用户名:</label>
             <input type="text" class="form-control" id="username" name="username" required>
@@ -95,6 +95,13 @@
 </div>
 
 <script>
+    // 在页面加载时关闭视频播放器
+    window.onload = function() {
+        closePlayer();
+    };
+</script>
+
+<script>
 function showLoginForm() {
     document.getElementById('loginForm').style.display = 'block';
     document.getElementById('registerForm').style.display = 'none';
@@ -119,8 +126,6 @@ function handleLoginSubmit(event) {
     }
 }
 
-// 为登录表单添加提交事件监听器
-document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

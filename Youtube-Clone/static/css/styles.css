@@ -89,6 +89,47 @@ body {
 	padding: 8px 2px 8px 10px;
 }
 
+/* 样式化喜欢的视频链接为按钮 */
+.like-button {
+	text-decoration: none; /* 移除下划线 */
+	display: flex;
+    align-items: center;
+    justify-content: start; /* 确保内容左对齐 */
+    padding: 0;
+    margin-bottom: 6px;
+    height: 40px;
+    font: 14px Roboto, Noto, sans-serif;
+  color: #606060; /* 字体颜色 */
+    border: none; /* 移除边框 */
+    background: none; /* 移除背景 */
+    cursor: pointer; /* 鼠标样式改为手指 */
+    outline: none; /* 移除聚焦时的外边框 */
+}
+
+.like-button a {
+    text-decoration: none; /* 确保所有子元素没有下划线 */
+}
+
+.home-button {
+	text-decoration: none; /* 移除下划线 */
+	display: flex;
+    align-items: center;
+    justify-content: start; /* 确保内容左对齐 */
+    padding: 0;
+    margin-bottom: 6px;
+    height: 40px;
+    font: 14px Roboto, Noto, sans-serif;
+  color: #606060; /* 字体颜色 */
+    border: none; /* 移除边框 */
+    background: none; /* 移除背景 */
+    cursor: pointer; /* 鼠标样式改为手指 */
+    outline: none; /* 移除聚焦时的外边框 */
+}
+
+.home-button a {
+    text-decoration: none; /* 确保所有子元素没有下划线 */
+}
+
 .hamburger {
 	height: 24px;
 	width: 24px;
@@ -192,7 +233,7 @@ body {
 }
 
 .user-btn:hover .iconify {
-    color: #007bff; /* 悬停时的颜色 */
+    color: #0e8eb5; /* 悬停时的颜色 */
 }
 
 .stick {
@@ -274,7 +315,12 @@ body {
   color: #606060;
 }
 
+.sidebar-category a {
+    text-decoration: none; /* 确保特定区域的链接也没有下划线 */
+}
+
 .user-icon {
+	text-decoration: none; 
 	height: 24px;
 	width: 24px;
 	padding: 0px 24px 0px 0px;
@@ -437,10 +483,13 @@ hr {
 	width: auto;
 	height: 100%;
 	overflow-y: scroll;
+	display: flex;
+	align-items: center;
+    justify-content: center; /* 确保内容左对齐 */
 }
 
 .main-content {
-    display: none; /* 默认隐藏所有内容 */
+    /* display: none; 默认隐藏所有内容 */
     padding: 20px;
 }
 
@@ -453,12 +502,16 @@ hr {
 	padding: 15px 25px 50px 25px;
 }
 
+.liked-videos {
+	background-color: #f9f9f9;
+	padding: 15px 25px 50px 25px;
+}
+
 .videos-container {
-	/*display: flex;
 	flex-direction: row;
-	justify-content: space-around;
-	flex-wrap: wrap;*/
-	display: grid;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	display: flex;
 	grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 	grid-column: span 4;
 	justify-items: center;

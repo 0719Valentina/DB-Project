@@ -22,9 +22,9 @@ function loadVideos() {
 }
 
 // 订阅按钮逻辑
-function handleSubscribe() {
-    const subscribeBtn = document.getElementById('subscribe-btn');
-    subscribeBtn.addEventListener('click', function(event) {
+function handleDelete() {
+    const deleteBtn = document.getElementById('delete-btn');
+    deleteBtn.addEventListener('click', function(event) {
         event.stopPropagation(); // 阻止事件冒泡
         // 切换文本和背景颜色
         this.textContent = this.textContent === '已订阅' ? 'Subscribe' : '已订阅';
@@ -45,16 +45,21 @@ function handleLike() {
 }
 
 function onPlayerShow() {
-    handleSubscribe();
+    handleDelete();
     handleLike();
 }
 
-function playVideo(src) {
+function playVideo(src, videoId) {
     document.getElementById('video-source').src = src;
     document.getElementById('video-element').load();
     //document.getElementById('video-title').textContent = title;
     //document.getElementById('author-name').textContent = author.name;
     document.getElementById('video-player').style.display = 'block';
+
+    // 将 videoId 存储在隐藏的 input 中
+    document.getElementById("current-video-id").value = videoId;
+
+    console.log("Playing video with ID:", videoId);
     onPlayerShow(); // 显示播放器时，添加事件监听器
 }
 
@@ -67,10 +72,10 @@ function closePlayer() {
     // 隐藏视频播放器模态框
     document.getElementById('video-player').style.display = 'none';
     // 重新启用订阅和点赞按钮
-    const subscribeBtn = document.getElementById('subscribe-btn');
+    const deleteBtn = document.getElementById('delete-btn');
     const likeBtn = document.getElementById('like-btn');
     // 移除订阅和点赞按钮的事件监听器，避免重复添加
-    subscribeBtn.removeEventListener('click', handleSubscribe);
+    deleteBtn.removeEventListener('click', handleSubscribe);
     likeBtn.removeEventListener('click', handleLike);
 }
 
@@ -90,4 +95,6 @@ document.getElementById('search').addEventListener('input', function() {
     });
 });
 
-window.onload = loadVideos;
+window.onload = function() {
+    closePlayer();
+};
