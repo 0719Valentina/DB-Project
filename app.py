@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify, session, send_from_directory, redirect, url_for
 import sqlite3
 import os
+import time
 from datetime import datetime
 from openai import OpenAI # 使用OpenAI API
 
@@ -76,6 +77,33 @@ def generate_sql(natural_language_request):
     # 去除额外的空白字符
     return sql_query.strip()
 
+@app.route('/update_history', methods=['POST'])
+def update_history():
+    data = request.json
+    user_id = data.get('user_id')
+    video_id = data.get('video_id')
+    username = data.get('username')
+
+    if not video_id or not user_id:
+        return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
+
+    conn = sqlite3.connect('db.sqlite')
+    cursor = conn.cursor()
+
+    try:
+        # 插入或更新历史记录
+        cursor.execute('''
+        INSERT OR REPLACE INTO History (User_ID, Video_ID, UserName, Watch_Time) 
+        VALUES (?, ?, ?, datetime('now'))
+        ''', (user_id, video_id, username))
+        
+        conn.commit()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        conn.close()
+
 @app.route('/get_user_id', methods=["POST"])
 def get_user_id():
     try:
@@ -116,7 +144,7 @@ def login():
                 # 将 is_admin 保存到中
                 session["user_name"] = user_name
                 session["is_admin"] = is_admin
-                return redirect(url_for("index"))
+                return index()
             else:
                 return jsonify({"error": "Wrong Password!"}), 401
         else:
@@ -137,9 +165,7 @@ def search():
 
     # 调用大模型生成SQL
     sql_query = generate_sql(combined_request)
-    print(sql_query)
     result = execute_sql(sql_query)
-    print(result)
     return render_template("likedVideos.html", videos=result)
 
 
@@ -188,6 +214,39 @@ def search_liked():
     constraint2 = f"where Video_ID is in '{ids}'"
     combined_request2 = f"{action2} - {field2} - {constraint2}"
 
+    time.sleep(1) #防止limit error
+    # 调用大模型生成SQL
+    sql_query2 = generate_sql(combined_request2)
+    result2 = execute_sql(sql_query2)
+    return render_template("likedVideos.html", videos=result2)
+
+# 处理用户的search history请求
+@app.route("/search_history")
+def search_history():
+    # user_request = request.args.get("user_request")
+    action = "search all the Video_ID "
+    field = "from History table"
+    username = session.get("user_name", None)  # 使用 `get` 来避免 KeyError
+    
+    if username is None:
+        # 处理未登录或没有权限的情况
+        return render_template("likedVideos.html", videos=None)
+    constraint = f"where username is '{username}'"
+    combined_request = f"{action} - {field} - {constraint}"
+    user_role = session["is_admin"]
+
+    # 调用大模型生成SQL
+    sql_query1 = generate_sql(combined_request)
+    
+    result = execute_sql(sql_query1)
+    ids = [single["Video_ID"] for single in result]
+    
+    action2 = "search all videos "
+    field2 = "from Videos table"
+    constraint2 = f"where Video_ID is in '{ids}'"
+    combined_request2 = f"{action2} - {field2} - {constraint2}"
+
+    time.sleep(1)
     # 调用大模型生成SQL
     sql_query2 = generate_sql(combined_request2)
     result2 = execute_sql(sql_query2)
@@ -330,13 +389,14 @@ def add_liked():
 # 主页面：展示所有视频
 @app.route('/')
 def index():
-    username = session.get('username')
-    print("Index function called")  # 在控制台输出信息
+    username = session.get('user_name')
+    
     conn = sqlite3.connect('db.sqlite')  # 使用 SQLite 数据库
     conn.row_factory = sqlite3.Row  # 使得返回的查询结果为字典格式
 
     videos = conn.execute('SELECT * FROM videos').fetchall()  # 从数据库中获取所有视频
     conn.close()
+
     return render_template('index.html', videos=videos, username=username)
 
 # 用户页面：展示用户信息或其他内容

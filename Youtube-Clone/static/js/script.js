@@ -59,6 +59,48 @@ function playVideo(src, videoId) {
     // 将 videoId 存储在隐藏的 input 中
     document.getElementById("current-video-id").value = videoId;
 
+    // const username = "{{ username }}"; // 获取嵌入的用户名
+
+    // 调用后端获取 user_id
+    fetch('/get_user_id', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error("Error fetching user_id:", data.error);
+        } else {
+            const userId = data.user_id; // 获取后端返回的 user_id
+
+            // 将 user_id 和 video_id 一起发送到后端更新历史记录
+            fetch('/update_history', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    video_id: videoId,
+                    username:username
+                })
+            })
+            .then(updateResponse => {
+                if (!updateResponse.ok) {
+                    console.error("Failed to update history:", updateResponse.statusText);
+                } else {
+                    console.log("History updated successfully");
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error in fetching user_id:", error);
+    });
+
     console.log("Playing video with ID:", videoId);
     onPlayerShow(); // 显示播放器时，添加事件监听器
 }

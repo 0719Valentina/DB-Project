@@ -19,12 +19,30 @@ CREATE TABLE IF NOT EXISTS Users (
 )
 ''')
 
+# 创建 Videos 表
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Videos (
+    Video_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    User_ID INTEGER NOT NULL,
+    Upload_Time TEXT NOT NULL,
+    Title TEXT NOT NULL,
+    Description TEXT,
+    Views INTEGER DEFAULT 0,
+    Likes INTEGER DEFAULT 0,
+    Video_URL TEXT NOT NULL,
+    Picture_URL TEXT,
+    FOREIGN KEY (User_ID) REFERENCES Users (User_ID)
+)
+''')
+
+
 # 创建 History 表
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS History (
     History_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     User_ID INTEGER NOT NULL,
     Video_ID INTEGER NOT NULL,
+    UserName TEXT NOT NULL,
     Watch_Time TEXT NOT NULL,
     FOREIGN KEY (User_ID) REFERENCES Users (User_ID),
     FOREIGN KEY (Video_ID) REFERENCES Videos (Video_ID)
@@ -52,22 +70,6 @@ CREATE TABLE IF NOT EXISTS Subscription (
     PRIMARY KEY (Subscription_ID, Subscriber_User_ID),
     FOREIGN KEY (Subscriber_User_ID) REFERENCES Users (User_ID),
     FOREIGN KEY (Subscribed_User_ID) REFERENCES Users (User_ID)
-)
-''')
-
-# 创建 Videos 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Videos (
-    Video_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    User_ID INTEGER NOT NULL,
-    Upload_Time TEXT NOT NULL,
-    Title TEXT NOT NULL,
-    Description TEXT,
-    Views INTEGER DEFAULT 0,
-    Likes INTEGER DEFAULT 0,
-    Video_URL TEXT NOT NULL,
-    Picture_URL TEXT,
-    FOREIGN KEY (User_ID) REFERENCES Users (User_ID)
 )
 ''')
 

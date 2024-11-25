@@ -78,8 +78,12 @@
 					<span>视频库</span>
 				</div>
 				<div class = "sidebar-category">
-					<span class="iconify user-icon" data-icon="ic:baseline-history" data-inline="false"></span>
-					<span>历史观看</span>
+					<a href = '/search_history'>
+						<button class = "like-button">
+							<span class="iconify user-icon" data-icon="ic:baseline-history" data-inline="false"></span>
+							<span>历史观看</span>
+						</button>
+					</a>
 				</div>
 				<div class = "sidebar-category">
 					<span class="iconify user-icon" data-icon="ant-design:play-square-outlined" data-inline="false"></span>
@@ -273,7 +277,7 @@
 			<div class = "videos-container">
 				{% if videos %}
 					{% for video in videos %}
-						<div class = "video", onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
