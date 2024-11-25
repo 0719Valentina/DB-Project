@@ -170,7 +170,10 @@ def search_liked():
     # user_request = request.args.get("user_request")
     action = "search all the Video_ID "
     field = "from Liked_Video table"
-    username = session["user_name"]
+    username = session.get("username", None)  # 使用 `get` 来避免 KeyError
+    if username is None:
+        # 处理未登录或没有权限的情况
+        return render_template("likedVideos.html", videos=None)
     constraint = f"where username is '{username}'"
     combined_request = f"{action} - {field} - {constraint}"
     user_role = session["is_admin"]
