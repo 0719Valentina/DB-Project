@@ -182,62 +182,26 @@
 
 	<!--**********START OF HEADER NAVBAR**********-->
 
-	<!-- <div class = "header-navbar">
-		<button class = "navbar-element first active">
+	<div class = "header-navbar">
+		<button class = "navbar-element" onclick="showContent('home')">
 			All
 		</button>
-		<button class = "navbar-element">
-			Music
-		</button>
-		<button class = "navbar-element">
+		<button class = "navbar-element"  onclick="showContent('wildlife')">
 			Wildlife
 		</button>
-		<button class = "navbar-element">
+		<button class = "navbar-element" onclick="showContent('education')">
 			Education
 		</button>
-		<button class = "navbar-element">
-			Recently Uploaded
-		</button>
-		<button class = "navbar-element">
-			Live
-		</button>
-		<button class = "navbar-element">
-			Tamil
-		</button>
-		<button class = "navbar-element">
-			T-Series
-		</button>
-		<button class = "navbar-element">
-			Cricket
-		</button>
-		<button class = "navbar-element">
+		<button class = "navbar-element" onclick="showContent('sports')">
 			Sports
 		</button>
-		<button class = "navbar-element">
+		<button class = "navbar-element" onclick="showContent('eating')">
 			Eating
 		</button>
-		<button class = "navbar-element">
+		<button class = "navbar-element"  onclick="showContent('Laughter')">
 			Laughter
 		</button>
-		<button class = "navbar-element">
-			Music
-		</button>
-		<button class = "navbar-element">
-			Wildlife
-		</button>
-		<button class = "navbar-element">
-			Education
-		</button>
-		<button class = "navbar-element">
-			Recently Uploaded
-		</button>
-		<button class = "navbar-element">
-			Live
-		</button>
-		<button class = "navbar-element">
-			Tamil
-		</button>
-	</div> -->
+	</div> 
 
 	<!--**********END OF HEADER NAVBAR**********-->
 
@@ -300,6 +264,146 @@
 		</div>
 	</div>		
 
+	<div class = "main-content" id="wildlife">
+		<div class = "videos">
+			<div class = "videos-container">
+				{% if wildlife_videos %}
+					{% for video in wildlife_videos %}
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+							<div class = "video-thumbnail">
+								<img src="{{video.picture_url}}" alt = "" />
+							</div>                  
+							<div class = "video-details">
+								<div class = "author">
+									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								</div>
+								<div class = "title">
+									<h3>{{video.title}}</h3>
+										<a href="">Channel 1</a>
+									<span>10M views • 3 Months Ago</span>
+								</div>
+							</div>
+						</div>  
+					{% endfor %}
+				{% else %}
+					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
+				{% endif %}         
+			</div>
+		</div>
+	</div>		
+
+	<div class = "main-content" id="education">
+		<div class = "videos">
+			<div class = "videos-container">
+				{% if edu_videos %}
+					{% for video in edu_videos %}
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+							<div class = "video-thumbnail">
+								<img src="{{video.picture_url}}" alt = "" />
+							</div>                  
+							<div class = "video-details">
+								<div class = "author">
+									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								</div>
+								<div class = "title">
+									<h3>{{video.title}}</h3>
+										<a href="">Channel 1</a>
+									<span>10M views • 3 Months Ago</span>
+								</div>
+							</div>
+						</div>  
+					{% endfor %}
+				{% else %}
+					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
+				{% endif %}         
+			</div>
+		</div>
+	</div>		
+
+	<div class = "main-content" id="sports">
+		<div class = "videos">
+			<div class = "videos-container">
+				{% if sports_videos %}
+					{% for video in sports_videos %}
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+							<div class = "video-thumbnail">
+								<img src="{{video.picture_url}}" alt = "" />
+							</div>                  
+							<div class = "video-details">
+								<div class = "author">
+									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								</div>
+								<div class = "title">
+									<h3>{{video.title}}</h3>
+										<a href="">Channel 1</a>
+									<span>10M views • 3 Months Ago</span>
+								</div>
+							</div>
+						</div>  
+					{% endfor %}
+				{% else %}
+					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
+				{% endif %}         
+			</div>
+		</div>
+	</div>		
+
+	<div class = "main-content" id="eating">
+		<div class = "videos">
+			<div class = "videos-container">
+				{% if eating_videos %}
+					{% for video in eating_videos %}
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+							<div class = "video-thumbnail">
+								<img src="{{video.picture_url}}" alt = "" />
+							</div>                  
+							<div class = "video-details">
+								<div class = "author">
+									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								</div>
+								<div class = "title">
+									<h3>{{video.title}}</h3>
+										<a href="">Channel 1</a>
+									<span>10M views • 3 Months Ago</span>
+								</div>
+							</div>
+						</div>  
+					{% endfor %}
+				{% else %}
+					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
+				{% endif %}         
+			</div>
+		</div>
+	</div>	
+	
+	<div class = "main-content" id="Laughter">
+		<div class = "videos">
+			<div class = "videos-container">
+				{% if Laughter_videos %}
+					{% for video in Laughter_videos %}
+						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+							<div class = "video-thumbnail">
+								<img src="{{video.picture_url}}" alt = "" />
+							</div>                  
+							<div class = "video-details">
+								<div class = "author">
+									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								</div>
+								<div class = "title">
+									<h3>{{video.title}}</h3>
+										<a href="">Channel 1</a>
+									<span>10M views • 3 Months Ago</span>
+								</div>
+							</div>
+						</div>  
+					{% endfor %}
+				{% else %}
+					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
+				{% endif %}         
+			</div>
+		</div>
+	</div>		
+
 	<!-- Video Player Modal -->
 	<div id="video-player" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 1000;">
 		<div style="position: relative; top: 50%; transform: translateY(-50%); width: 80%; max-width: 960px; margin: auto; padding: 10px;">
@@ -329,6 +433,7 @@
 	</div>
 
 	<!--**********END OF MAIN CONTENT**********-->
+	
 	<script type="text/javascript" src = "/static/js/script.js"></script>
 	<script>
 		function showContent(contentId) {
@@ -407,7 +512,7 @@
 					.then(response => response.json())
 					.then(data => {
 						if (data.message === "Success") {
-							alert("成功添加到“喜欢的视频”!");
+							alert("点赞成功!");
 						} else {
 							alert("点赞失败!");
 						}
@@ -450,17 +555,17 @@
 			})
 			.then(response => response.json())
 			.then(data => {
-				if (data.message === "Success") {
-					alert("视频删除成功!");
-					location.href = '/'; 
-					location.reload();
-				} else if (data.message === "No Authorization"){
+				if (data.message === "No Authorization"){
 					alert("您无权限删除视频!");
 					location.href = '/'; 
 					location.reload();
 				}
 				else if (data.message === "Not Login"){
 					alert("请先登录!");
+					location.href = '/'; 
+					location.reload();
+				}else{
+					alert("删除成功!");
 					location.href = '/'; 
 					location.reload();
 				}
@@ -471,5 +576,6 @@
 				alert("An error occurred!");
 			});
 	</script>
+
 </body>
 </html>

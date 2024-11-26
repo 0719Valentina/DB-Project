@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Users (
 )
 ''')
 
-# 创建 Videos 表
+# 创建 Videos 表，增加 category_id 外键字段
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Videos (
     Video_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,10 +31,11 @@ CREATE TABLE IF NOT EXISTS Videos (
     Likes INTEGER DEFAULT 0,
     Video_URL TEXT NOT NULL,
     Picture_URL TEXT,
-    FOREIGN KEY (User_ID) REFERENCES Users (User_ID)
+    Category_ID INTEGER NOT NULL,  -- 新增字段
+    FOREIGN KEY (User_ID) REFERENCES Users (User_ID),
+    FOREIGN KEY (Category_ID) REFERENCES Video_Category (Category_ID)  -- 外键约束
 )
 ''')
-
 
 # 创建 History 表
 cursor.execute('''
@@ -94,87 +95,7 @@ CREATE TABLE IF NOT EXISTS Comment (
 )
 ''')
 
-# 创建 Music 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Music (
-    Music_ID INTEGER PRIMARY KEY,
-    Artist_ID INTEGER NOT NULL,
-    Composer_ID INTEGER NOT NULL,
-    Title TEXT NOT NULL,
-    Album INTEGER NOT NULL,
-    Duration INTEGER NOT NULL,
-    FOREIGN KEY (Music_ID) REFERENCES Videos (Video_ID),
-    FOREIGN KEY (Artist_ID) REFERENCES Users (User_ID),
-    FOREIGN KEY (Composer_ID) REFERENCES Users (User_ID),
-    FOREIGN KEY (Album) REFERENCES Album (Album_ID)
-)
-''')
 
-# 创建 Album 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Album (
-    Album_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Title TEXT NOT NULL,
-    Release_Date TEXT NOT NULL,
-    Cover_Image TEXT
-)
-''')
-
-# 创建 Music Section 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Music_Section (
-    Section_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Section_Name TEXT NOT NULL
-)
-''')
-
-# 创建 Section_Album 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Section_Album (
-    Section_ID INTEGER NOT NULL,
-    Album_ID INTEGER NOT NULL,
-    Recommendation_Order INTEGER NOT NULL,
-    PRIMARY KEY (Section_ID, Album_ID),
-    FOREIGN KEY (Section_ID) REFERENCES Music_Section (Section_ID),
-    FOREIGN KEY (Album_ID) REFERENCES Album (Album_ID)
-)
-''')
-
-# 创建 Game 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Game (
-    Game_ID INTEGER PRIMARY KEY,
-    Game_Name TEXT NOT NULL,
-    Genre TEXT NOT NULL,
-    Developer INTEGER NOT NULL,
-    Section INTEGER NOT NULL,
-    FOREIGN KEY (Game_ID) REFERENCES Videos (Video_ID),
-    FOREIGN KEY (Developer) REFERENCES Users (User_ID),
-    FOREIGN KEY (Section) REFERENCES Game_Page (Section_ID)
-)
-''')
-
-# 创建 Game_Page 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Game_Page (
-    Section_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Section_Name TEXT NOT NULL
-)
-''')
-
-# 创建 Movies 表
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Movies (
-    Movie_ID INTEGER PRIMARY KEY,
-    Title TEXT NOT NULL,
-    Content TEXT NOT NULL,
-    Director_ID INTEGER NOT NULL,
-    Genre TEXT NOT NULL,
-    Release_Date TEXT NOT NULL,
-    FOREIGN KEY (Movie_ID) REFERENCES Videos (Video_ID),
-    FOREIGN KEY (Director_ID) REFERENCES Users (User_ID)
-)
-''')
 
 # 提交更改并关闭连接
 conn.commit()

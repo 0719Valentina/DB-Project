@@ -4,21 +4,22 @@ import os
 import time
 from datetime import datetime
 from openai import OpenAI # 使用OpenAI API
+from ratelimit import limits, sleep_and_retry
 
 app = Flask(__name__, template_folder='Youtube-Clone/templates', 
             static_folder='Youtube-Clone/static')
 app.secret_key = os.urandom(24)
 
-client = OpenAI(
-    api_key="sk-Dk1Bl0YFOFHsv9hjH7m3G7IJBqEkNvsUIGH5W6XdC7PtaQnh", # 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
-    base_url="https://api.moonshot.cn/v1",
-)
+# client = OpenAI(
+#     api_key="sk-Dk1Bl0YFOFHsv9hjH7m3G7IJBqEkNvsUIGH5W6XdC7PtaQnh", 
+#     base_url="https://api.moonshot.cn/v1",
+# )
 
-# 数据库的表格信息
-path = 'create_db.py'
-# 打开文件并读取所有内容
-with open(path, 'r', encoding='utf-8') as file:
-    preInfo = file.read()
+# # 数据库的表格信息
+# path = 'create_db.py'
+# # 打开文件并读取所有内容
+# with open(path, 'r', encoding='utf-8') as file:
+#     preInfo = file.read()
 
 # 获取数据库用户
 def get_user(user_name):
@@ -43,10 +44,12 @@ def update_login_time(user_id):
 
 
 # 数据库查询功能
-def execute_sql(sql_query):
+def execute_sql(sql_query, params=()):
     conn = sqlite3.connect('db.sqlite')
     conn.row_factory = sqlite3.Row
-    result = conn.execute(sql_query).fetchall()
+    cursor = conn.cursor()
+    result = cursor.execute(sql_query, params).fetchall()
+    conn.commit()
     conn.close()
     return result
 
@@ -56,26 +59,28 @@ def check_permission(user_role, action):
         return False
     return True
 
-# 调用大模型，将自然语言转变为SQL
-def generate_sql(natural_language_request):
-    response = client.chat.completions.create(
-        model = "moonshot-v1-8k",
-        messages=[
-            {"role": "system", "content": "This is the database information:" + preInfo},
-            {"role": "user", "content": f"Convert this request into correct SQL command. Provide only the SQL query without extra comments: {natural_language_request}"}
-        ],
-        temperature = 0.3,
-    )
-    sql_query = response.choices[0].message.content
+# # 调用大模型，将自然语言转变为SQL
+# @sleep_and_retry
+# @limits(calls=1, period=5)  # 每 1 秒限制 1 次调用
+# def generate_sql(natural_language_request):
+#     response = client.chat.completions.create(
+#         model = "moonshot-v1-8k",
+#         messages=[
+#             {"role": "system", "content": "This is the database information:" + preInfo},
+#             {"role": "user", "content": f"Convert this request into correct SQL command. Provide only the SQL query without extra comments: {natural_language_request}"}
+#         ],
+#         temperature = 0.3,
+#     )
+#     sql_query = response.choices[0].message.content
 
-    # 去除可能存在的代码块标记（'''sql 和 '''）
-    if sql_query.startswith("```sql"):
-        sql_query = sql_query[6:]  # 去掉开头的 '''sql
-    if sql_query.endswith("```"):
-        sql_query = sql_query[:-3]  # 去掉结尾的 '''
+#     # 去除可能存在的代码块标记（'''sql 和 '''）
+#     if sql_query.startswith("```sql"):
+#         sql_query = sql_query[6:]  # 去掉开头的 '''sql
+#     if sql_query.endswith("```"):
+#         sql_query = sql_query[:-3]  # 去掉结尾的 '''
 
-    # 去除额外的空白字符
-    return sql_query.strip()
+#     # 去除额外的空白字符
+#     return sql_query.strip()
 
 @app.route('/update_history', methods=['POST'])
 def update_history():
@@ -83,6 +88,7 @@ def update_history():
     user_id = data.get('user_id')
     video_id = data.get('video_id')
     username = data.get('username')
+    session["user_id"] = user_id
 
     if not video_id or not user_id:
         return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
@@ -158,14 +164,9 @@ def login():
 @app.route("/search", methods=["GET"])
 def search():
     user_request = request.args.get("user_request")
-    action = "search all the videos "
-    field = "from videos table"
-    constarint = f"whose title contains {user_request}"
-    combined_request = f"{action} - {field} - {constarint}"
 
-    # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
-    result = execute_sql(sql_query)
+    sql_query = "SELECT * FROM videos WHERE title LIKE ?"
+    result = execute_sql(sql_query, (f"%{user_request}%",))
     return render_template("likedVideos.html", videos=result)
 
 
@@ -178,8 +179,7 @@ def search_sub():
     combined_request = f"{action} - {field}"
     user_role = session["is_admin"]
 
-    # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
+    sql_query = ''
 
     # # 检查权限和业务逻辑
     # action = "query"  # 简单示例，设定操作类型
@@ -194,87 +194,49 @@ def search_sub():
 @app.route("/search_liked")
 def search_liked():
     # user_request = request.args.get("user_request")
-    action = "search all the Video_ID "
-    field = "from Liked_Video table"
-    username = session.get("username", None)  # 使用 `get` 来避免 KeyError
-    if username is None:
+    user_id = session.get("user_id", None)  # 使用 `get` 来避免 KeyError
+    if user_id is None:
         # 处理未登录或没有权限的情况
         return render_template("likedVideos.html", videos=None)
-    constraint = f"where username is '{username}'"
-    combined_request = f"{action} - {field} - {constraint}"
-    user_role = session["is_admin"]
-
-    # 调用大模型生成SQL
-    sql_query1 = generate_sql(combined_request)
-    result = execute_sql(sql_query1)
-    ids = [single["Video_ID"] for single in result]
     
-    action2 = "search all videos "
-    field2 = "from Videos table"
-    constraint2 = f"where Video_ID is in '{ids}'"
-    combined_request2 = f"{action2} - {field2} - {constraint2}"
-
-    time.sleep(1) #防止limit error
-    # 调用大模型生成SQL
-    sql_query2 = generate_sql(combined_request2)
-    result2 = execute_sql(sql_query2)
-    return render_template("likedVideos.html", videos=result2)
+    sql_query = "SELECT * FROM Videos WHERE Video_ID IN (SELECT Video_ID FROM Liked_Video WHERE User_ID =?)"
+    
+    result = execute_sql(sql_query, (user_id,))
+    return render_template("likedVideos.html", videos=result)
 
 # 处理用户的search history请求
 @app.route("/search_history")
 def search_history():
     # user_request = request.args.get("user_request")
-    action = "search all the Video_ID "
-    field = "from History table"
     username = session.get("user_name", None)  # 使用 `get` 来避免 KeyError
     
     if username is None:
         # 处理未登录或没有权限的情况
         return render_template("likedVideos.html", videos=None)
-    constraint = f"where username is '{username}'"
-    combined_request = f"{action} - {field} - {constraint}"
-    user_role = session["is_admin"]
 
-    # 调用大模型生成SQL
-    sql_query1 = generate_sql(combined_request)
-    
-    result = execute_sql(sql_query1)
-    ids = [single["Video_ID"] for single in result]
-    
-    action2 = "search all videos "
-    field2 = "from Videos table"
-    constraint2 = f"where Video_ID is in '{ids}'"
-    combined_request2 = f"{action2} - {field2} - {constraint2}"
-
-    time.sleep(1)
-    # 调用大模型生成SQL
-    sql_query2 = generate_sql(combined_request2)
-    result2 = execute_sql(sql_query2)
-    return render_template("likedVideos.html", videos=result2)
+    sql_query = 'SELECT * FROM Videos WHERE Video_ID IN (SELECT Video_ID FROM History WHERE UserName =?)'
+    result = execute_sql(sql_query,(username,))
+    return render_template("likedVideos.html", videos=result)
 
 # 处理用户的delete请求（只接受POST请求）
 @app.route("/delete", methods=["POST"])
 def delete():#
     data = request.get_json()  
     video_id = data["videoId"] 
-    action = "delete Video_ID = "
-    field = "from Videos table"
-    combined_request = f"{action} - {video_id} - {field}"
-    user_role = session.get("is_admin", None)  # 使用 `get` 来避免 KeyError
+    user_role = session.get("is_admin", None)  
     if user_role is None:
         # 处理未登录或没有权限的情况
         return jsonify({"message": "Not Login", "redirect": url_for('index')})
 
-    # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
+    sql_query = 'DELETE FROM Videos WHERE Video_ID=?'
     # 检查权限和业务逻辑
     if user_role != "Admin":
         return jsonify({"message": "No Authorization", "redirect": url_for('index')})
 
     # 执行SQL并返回结果
     try:
-        result = execute_sql(sql_query)
-        return redirect(url_for("index"))
+        result = execute_sql(sql_query,(video_id,))
+        return jsonify({"message": "Success", "redirect": url_for('index')})
     except Exception as e:
             return jsonify({"message":"Failed"})
 
@@ -293,7 +255,7 @@ def delete_sub():#
         return redirect(url_for("login"))
 
     # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
+    sql_query = ''
 
     # # 检查权限和业务逻辑
     # if not user_role:
@@ -318,7 +280,7 @@ def delete_liked():#
     user_role = session["is_admin"]
 
     # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
+    sql_query = ''
 
     # # 检查权限和业务逻辑
     # if not user_role:
@@ -343,7 +305,7 @@ def add_sub():#
     user_role = session["is_admin"]
 
     # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
+    sql_query = ""
 
     # # 检查权限和业务逻辑
     # if not user_role:
@@ -365,21 +327,14 @@ def add_liked():
     user_id = data["userId"]   
     video_id = data["videoId"] 
     
-    action = "add video to liked video table"
-    c = f"whose user_id is {user_id} and video_id is {video_id}"
-    combined_request = f"{action} - {c}"
     user_role = session["is_admin"]
+    sql_query = '''
+        INSERT OR REPLACE INTO Liked_Video (User_ID, Video_ID, Liked_Time) 
+        VALUES (?, ?, datetime('now'))
+        '''
 
-    # 调用大模型生成SQL
-    sql_query = generate_sql(combined_request)
-
-    # # 检查权限和业务逻辑
-    # if not user_role:
-    #     return jsonify({"error": "No Authorization!"})
-
-    # 执行SQL并返回结果
     try:
-        result = execute_sql(sql_query)
+        result = execute_sql(sql_query, (user_id, video_id))
         return jsonify({"message":"Success"})
     except Exception as e:
             return jsonify({"message":"Failed"})
@@ -395,9 +350,15 @@ def index():
     conn.row_factory = sqlite3.Row  # 使得返回的查询结果为字典格式
 
     videos = conn.execute('SELECT * FROM videos').fetchall()  # 从数据库中获取所有视频
+    wildlife_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=1').fetchall()
+    edu_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=2').fetchall()
+    sports_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=3').fetchall()
+    eating_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=4').fetchall()
+    Laughter_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=5').fetchall()
+    
     conn.close()
-
-    return render_template('index.html', videos=videos, username=username)
+    return render_template('index.html', videos=videos, username=username, wildlife_videos=wildlife_videos, edu_videos=edu_videos,
+                           sports_videos=sports_videos, eating_videos=eating_videos, Laughter_videos=Laughter_videos)
 
 # 用户页面：展示用户信息或其他内容
 @app.route('/user')
