@@ -1,7 +1,7 @@
 import sqlite3
 
 # 连接到数据库
-conn = sqlite3.connect('db.sqlite')  # 这里指定的是数据库文件名
+conn = sqlite3.connect('db.sqlite')  # 指定数据库文件名
 cursor = conn.cursor()
 
 # 创建 Users 表
@@ -10,15 +10,16 @@ CREATE TABLE IF NOT EXISTS Users (
     User_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Email TEXT UNIQUE NOT NULL,
     UserName TEXT NOT NULL,
-    Password_Hash TEXT NOT NULL,
+    Password TEXT NOT NULL,
     Create_Time TEXT NOT NULL,
     Last_Login TEXT,
     Picture TEXT,
-    Bio TEXT
+    Bio TEXT,
+    Role TEXT NOT NULL CHECK (Role IN ('Admin', 'Uploader', 'Viewer')) DEFAULT 'Viewer'
 )
 ''')
 
-# 创建 Videos 表
+# 创建 Videos 表，增加 category_id 外键字段
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Videos (
     Video_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +31,9 @@ CREATE TABLE IF NOT EXISTS Videos (
     Likes INTEGER DEFAULT 0,
     Video_URL TEXT NOT NULL,
     Picture_URL TEXT,
-    FOREIGN KEY (User_ID) REFERENCES Users (User_ID)
+    Category_ID INTEGER NOT NULL,  -- 新增字段
+    FOREIGN KEY (User_ID) REFERENCES Users (User_ID),
+    FOREIGN KEY (Category_ID) REFERENCES Video_Category (Category_ID)  -- 外键约束
 )
 ''')
 
@@ -40,6 +43,7 @@ CREATE TABLE IF NOT EXISTS History (
     History_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     User_ID INTEGER NOT NULL,
     Video_ID INTEGER NOT NULL,
+    UserName TEXT NOT NULL,
     Watch_Time TEXT NOT NULL,
     FOREIGN KEY (User_ID) REFERENCES Users (User_ID),
     FOREIGN KEY (Video_ID) REFERENCES Videos (Video_ID)
@@ -49,10 +53,9 @@ CREATE TABLE IF NOT EXISTS History (
 # 创建 Liked_Video 表
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Liked_Video (
+    Video_ID INTEGER NOT NULL PRIMARY KEY,
     User_ID INTEGER NOT NULL,
-    Video_ID INTEGER NOT NULL,
     Liked_Time TEXT NOT NULL,
-    PRIMARY KEY (User_ID, Video_ID),
     FOREIGN KEY (User_ID) REFERENCES Users (User_ID),
     FOREIGN KEY (Video_ID) REFERENCES Videos (Video_ID)
 )
@@ -71,6 +74,14 @@ CREATE TABLE IF NOT EXISTS Subscription (
 )
 ''')
 
+# 创建 Video_Category 表
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Video_Category (
+    Category_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Category_Name TEXT NOT NULL
+)
+''')
+
 # 创建 Comment 表
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Comment (
@@ -84,24 +95,10 @@ CREATE TABLE IF NOT EXISTS Comment (
 )
 ''')
 
-# 插入初始数据到 Users 表
-#cursor.execute('''
-#INSERT INTO Users (Email, UserName, Password_Hash, Create_Time, Picture, Bio)
-#VALUES (?, ?, ?, ?, ?, ?)
-#''', ("user3@example.com", "user3", "hashed_password_333", "2024-11-01", "/static/images/user1.png", "Hello, I love videos!"))
 
-# 插入初始数据到 Videos 表
-
-#cursor.execute('''
-#INSERT INTO Videos (Video_ID, User_ID, Upload_Time, Title, Description, Video_URL, Picture_URL)
-#VALUES (?, ?, ?, ?, ?, ?)
-#''', (2, 1, "2024-11-06", "How to Install Visual Studio", 
-#      "A tutorial on installing Visual Studio Code on Windows 11.", 
-#      "/static/videos/How Install Visual Studio Code on Windows 11 (VS Code) (2024).mp4", 
-#      "/static/thumbnails/vscode.jpeg"))
 
 # 提交更改并关闭连接
 conn.commit()
 conn.close()
 
-print("所有表创建成功并插入了初始数据！")
+print("所有表创建成功！")
