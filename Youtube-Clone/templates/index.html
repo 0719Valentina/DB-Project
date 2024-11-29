@@ -241,7 +241,7 @@
 			<div class = "videos-container">
 				{% if videos %}
 					{% for video in videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -269,7 +269,7 @@
 			<div class = "videos-container">
 				{% if wildlife_videos %}
 					{% for video in wildlife_videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -297,7 +297,7 @@
 			<div class = "videos-container">
 				{% if edu_videos %}
 					{% for video in edu_videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -325,7 +325,7 @@
 			<div class = "videos-container">
 				{% if sports_videos %}
 					{% for video in sports_videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -353,7 +353,7 @@
 			<div class = "videos-container">
 				{% if eating_videos %}
 					{% for video in eating_videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -381,7 +381,7 @@
 			<div class = "videos-container">
 				{% if Laughter_videos %}
 					{% for video in Laughter_videos %}
-						<div class = "video" onclick="playVideo('{{ video.Video_URL }}', '{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
@@ -529,6 +529,10 @@
 	</script>
 
 	<script>
+		function redirectToVideoPage(videoId) {
+        window.location.href = "/videoplayer/" + videoId;  // 根据实际路由调整
+    }
+
 		document.getElementById("delete-btn").addEventListener("click", function () {
 			const videoId = document.getElementById("current-video-id").value;
 		
