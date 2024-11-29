@@ -366,5 +366,9 @@ def user():
     print("User function called")  # 在控制台输出信息
     return render_template('user.html')  # 渲染 user.html
 
+@app.route('/videoplayer/<int:video_id>')
+def videoplayer(video_id):
+    return render_template('videoplayer.html',video_id=video_id)  # 渲染 user.html
+
 if __name__ == "__main__":
     app.run(debug=True)
