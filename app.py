@@ -89,7 +89,7 @@ def update_history():
     video_id = data.get('video_id')
     username = data.get('username')
     session["user_id"] = user_id
-
+    
     if not video_id or not user_id:
         return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
 
@@ -123,6 +123,7 @@ def get_user_id():
         
         if result:
             user_id = result[0]  # 假设查询返回的是一个元组 (user_id,)
+            print(f"get user id {user_id}")
             return jsonify({"user_id": user_id})
         else:
             return jsonify({"error": "User not found"}), 404
@@ -164,45 +165,45 @@ def login():
 @app.route("/search", methods=["GET"])
 def search():
     user_request = request.args.get("user_request")
-
+    username = session.get("user_name", None)  # 使用 `get` 来避免 KeyError
+    
+    if username is None:
+        # 处理未登录或没有权限的情况
+        return render_template("likedVideos.html", videos=None, username=username)
+    
     sql_query = "SELECT * FROM videos WHERE title LIKE ?"
     result = execute_sql(sql_query, (f"%{user_request}%",))
-    return render_template("likedVideos.html", videos=result)
+    return render_template("likedVideos.html", videos=result, username=username)
 
 
 # 处理用户的search subscription请求（只接受GET请求）
 @app.route("/search_sub", methods=["GET"])
 def search_sub():
     # user_request = request.args.get("user_request")
-    action = "search all video"
-    field = "from subscribe table"
-    combined_request = f"{action} - {field}"
-    user_role = session["is_admin"]
-
-    sql_query = ''
-
-    # # 检查权限和业务逻辑
-    # action = "query"  # 简单示例，设定操作类型
-    # if not check_permission(user_role, action):
-    #     return jsonify({"error": "无权执行此操作"})
-
-    # 执行SQL并返回结果
-    result = execute_sql(sql_query)
-    return render_template("index.html", videos=result)
+    user_id = session.get("user_id", None)  # 使用 `get` 来避免 KeyError
+    if user_id is None:
+        # 处理未登录或没有权限的情况
+        return render_template("subscription.html", subscriptions=None)
+    
+    sql_query = "SELECT * FROM Subscription JOIN Users ON Subscription.Subscribed_User_ID = Users.user_id WHERE Subscriber_User_ID = ?"
+    
+    result = execute_sql(sql_query, (user_id,))
+    return render_template("subscription.html", subscriptions=result)
 
 # 处理用户的search liked video请求（只接受GET请求）
 @app.route("/search_liked")
 def search_liked():
     # user_request = request.args.get("user_request")
     user_id = session.get("user_id", None)  # 使用 `get` 来避免 KeyError
+    username = session.get("user_name", None)
     if user_id is None:
         # 处理未登录或没有权限的情况
-        return render_template("likedVideos.html", videos=None)
+        return render_template("likedVideos.html", videos=None, username=username)
     
     sql_query = "SELECT * FROM Videos WHERE Video_ID IN (SELECT Video_ID FROM Liked_Video WHERE User_ID =?)"
     
     result = execute_sql(sql_query, (user_id,))
-    return render_template("likedVideos.html", videos=result)
+    return render_template("likedVideos.html", videos=result, username=username)
 
 # 处理用户的search history请求
 @app.route("/search_history")
@@ -212,11 +213,12 @@ def search_history():
     
     if username is None:
         # 处理未登录或没有权限的情况
-        return render_template("likedVideos.html", videos=None)
+        return render_template("likedVideos.html", videos=None, username=username)
 
     sql_query = 'SELECT * FROM Videos WHERE Video_ID IN (SELECT Video_ID FROM History WHERE UserName =?)'
     result = execute_sql(sql_query,(username,))
-    return render_template("likedVideos.html", videos=result)
+    
+    return render_template("likedVideos.html", videos=result, username=username)
 
 # 处理用户的delete请求（只接受POST请求）
 @app.route("/delete", methods=["POST"])
@@ -298,25 +300,21 @@ def delete_liked():#
 # 处理用户的add subscription请求（只接受POST请求）
 @app.route("/add_sub", methods=["POST"])
 def add_sub():#
-    video_id = request.form.get("video_id")
-    action = "add video id = "
-    field = "to subscribe table"
-    combined_request = f"{action} - {video_id} - {field}"
-    user_role = session["is_admin"]
+    data = request.get_json()  
+    subscriber_id = data["subscriber"] 
+    subscribed_id = data["subscribed"] 
 
     # 调用大模型生成SQL
-    sql_query = ""
-
-    # # 检查权限和业务逻辑
-    # if not user_role:
-    #     return jsonify({"error": "No Authorization!"})
-
-    # 执行SQL并返回结果
+    sql_query = '''
+    INSERT OR REPLACE INTO Subscription (Subscriber_User_ID, Subscribed_User_ID, Subscription_Time)
+    VALUES (?, ?, datetime('now'))
+    '''
+    
     try:
-        result = execute_sql(sql_query)
-        return jsonify({"Success!"})
+        result = execute_sql(sql_query, (subscriber_id, subscribed_id))
+        return jsonify({"message":"Success"})
     except Exception as e:
-            return jsonify({"Failed"})
+            return jsonify({"message":"Failed"})
 
     return render_template("index.html")
 
@@ -349,12 +347,12 @@ def index():
     conn = sqlite3.connect('db.sqlite')  # 使用 SQLite 数据库
     conn.row_factory = sqlite3.Row  # 使得返回的查询结果为字典格式
 
-    videos = conn.execute('SELECT * FROM videos').fetchall()  # 从数据库中获取所有视频
-    wildlife_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=1').fetchall()
-    edu_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=2').fetchall()
-    sports_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=3').fetchall()
-    eating_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=4').fetchall()
-    Laughter_videos = conn.execute('SELECT * FROM videos WHERE Category_ID=5').fetchall()
+    videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id').fetchall()  # 从数据库中获取所有视频
+    wildlife_videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id WHERE Category_ID=1').fetchall()
+    edu_videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id WHERE Category_ID=2').fetchall()
+    sports_videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id WHERE Category_ID=3').fetchall()
+    eating_videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id WHERE Category_ID=4').fetchall()
+    Laughter_videos = conn.execute('SELECT * FROM videos JOIN Users ON videos.user_id = Users.user_id WHERE Category_ID=5').fetchall()
     
     conn.close()
     return render_template('index.html', videos=videos, username=username, wildlife_videos=wildlife_videos, edu_videos=edu_videos,
@@ -366,9 +364,19 @@ def user():
     print("User function called")  # 在控制台输出信息
     return render_template('user.html')  # 渲染 user.html
 
-@app.route('/videoplayer/<int:video_id>')
-def videoplayer(video_id):
-    return render_template('videoplayer.html',video_id=video_id)  # 渲染 user.html
+@app.route('/videoplayer/<video_id>/<username>')
+def videoplayer(video_id, username):
+    return render_template('videoplayer.html',video_id=video_id, username=username)  
+
+@app.route('/get_video_details')
+def get_video_details():
+    video_id = request.args.get('video_id')  # 从查询参数获取 video_id
+    
+    sql_query = "SELECT * FROM videos JOIN users ON videos.user_id = users.user_id WHERE Video_ID = ?"
+    result = execute_sql(sql_query, (video_id,))
+    video = dict(result[0]) if result else {}
+    return jsonify({"video": video})  
+
 
 if __name__ == "__main__":
     app.run(debug=True)

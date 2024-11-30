@@ -178,33 +178,25 @@
         </div>
     </div>
 
-    <div class = "main-content" id = "home">
-		<div class = "videos">
-			<div class = "videos-container">
-				{% if videos %}
-            		{% for video in videos %}
-						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}', username)">
-							<div class = "video-thumbnail">
-								<img src="{{video.picture_url}}" alt = "" />
-							</div>					
-							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
-								</div>
-								<div class = "title">
-									<h3>{{video.title}}</h3>
-									<a href="">Channel 1</a>
-									<span>10M views • 3 Months Ago</span>
-								</div>
-							</div>
-						</div>	
-					{% endfor %}
-				{% else %}
-					<p>No videos available.</p> <!-- 如果没有视频数据，则显示此信息 -->
-				{% endif %}			
-			</div>
-		</div>
-	</div>
+    <div class="main-content" id="home">
+        <div class="subscription-list">
+            {% if subscriptions %}
+                {% for subscription in subscriptions %}
+                    <div class="subscription-item">
+                        <div class="subscription-thumbnail">
+                            <img src="{{ subscription.Picture }}" alt=""/>
+                        </div>
+                        <div class="subscription-details">
+                            <span>{{ subscription.UserName }}</span>
+                            <p>{{ subscription.Bio }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No subscriptions available.</p>
+            {% endif %}
+        </div>
+    </div>
 
     <script>
 		function showContent(contentId) {
@@ -235,13 +227,6 @@
 
 		});
 	</script>
-
-	<script>
-        function redirectToVideoPage(videoId, username) {
-            const url = "/videoplayer/" + videoId + "/" + username;
-            window.location.href = url;
-        }
-</script>
 
 </body>
 </html>

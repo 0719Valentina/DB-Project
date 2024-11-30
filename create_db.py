@@ -64,13 +64,13 @@ CREATE TABLE IF NOT EXISTS Liked_Video (
 # 创建 Subscription 表
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Subscription (
-    Subscription_ID INTEGER NOT NULL,
+    Subscription_ID INTEGER PRIMARY KEY AUTOINCREMENT, 
     Subscriber_User_ID INTEGER NOT NULL,
     Subscribed_User_ID INTEGER NOT NULL,
     Subscription_Time TEXT NOT NULL,
-    PRIMARY KEY (Subscription_ID, Subscriber_User_ID),
     FOREIGN KEY (Subscriber_User_ID) REFERENCES Users (User_ID),
-    FOREIGN KEY (Subscribed_User_ID) REFERENCES Users (User_ID)
+    FOREIGN KEY (Subscribed_User_ID) REFERENCES Users (User_ID),
+    UNIQUE (Subscriber_User_ID, Subscribed_User_ID)
 )
 ''')
 

@@ -61,9 +61,13 @@
 				<span class="iconify user-icon" data-icon="ci:home-alt-fill" data-inline="false"></span>
 				<span>首页</span>
 			</div>
-			<div class="sidebar-category" onclick="showContent('myVideos')">
-				<span class="iconify user-icon" data-icon="ic:baseline-video-library" data-inline="false"></span>
-				<span>我的视频</span>
+			<div class="sidebar-category" onclick="showContent('subscriptions')">
+				<a href = '/search_sub'>
+					<button class = "like-button">
+						<span class="iconify user-icon" data-icon="ic:baseline-video-library" data-inline="false"></span>
+						<span>我的订阅</span>
+					</button>
+				</a>
 			</div>
 			<div class="sidebar-category" onclick="showContent('subscriptions')">
 				<span class="iconify user-icon" data-icon="ic:baseline-subscriptions" data-inline="false"></span>
@@ -241,17 +245,19 @@
 			<div class = "videos-container">
 				{% if videos %}
 					{% for video in videos %}
-						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}')">
+						<div class = "video" onclick="redirectToVideoPage('{{ video.video_id }}', username)">
 							<div class = "video-thumbnail">
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -274,12 +280,14 @@
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -302,12 +310,14 @@
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -330,12 +340,14 @@
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -358,12 +370,14 @@
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -386,12 +400,14 @@
 								<img src="{{video.picture_url}}" alt = "" />
 							</div>                  
 							<div class = "video-details">
-								<div class = "author">
-									<span class="iconify video-icon" data-icon="carbon:user-avatar-filled" data-inline="false"></span>
+								<div class="subscription-item">
+									<div class="subscription-thumbnail">
+										<img src="{{ video.Picture }}" alt=""/>
+									</div>
 								</div>
 								<div class = "title">
 									<h3>{{video.title}}</h3>
-										<a href="">Channel 1</a>
+									<span>{{ video.UserName }}</span>
 									<span>10M views • 3 Months Ago</span>
 								</div>
 							</div>
@@ -404,37 +420,7 @@
 		</div>
 	</div>		
 
-	<!-- Video Player Modal -->
-	<div id="video-player" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 1000;">
-		<div style="position: relative; top: 50%; transform: translateY(-50%); width: 80%; max-width: 960px; margin: auto; padding: 10px;">
-			<div style="position: relative; width: 100%;">
-				<video id="video-element" width="100%" height="auto" controls>
-					<source id="video-source" type="video/mp4">
-					Your browser does not support the video tag.
-				</video>
-				<!-- 隐藏的 video_id -->
-				<input type="hidden" id="current-video-id" value="">
-				<div style="position: absolute; top: 10px; right: 10px;">
-					<button onclick="closePlayer()">Close</button>
-				</div>
-			</div>
-			<div style="padding: 10px; background: #282828; color: #fff; margin-top: -40px; position: relative;">
-				<div style="display: flex; align-items: center; padding-bottom: 10px;">
-					<img src="/static/images/user3.jpeg" alt="Author Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
-					<div>
-						<h3 id="video-title" style="margin: 0; padding: 0; font-size: 16px;">Video Title</h3>
-						<p id="author-name" style="margin: 0; padding: 0; font-size: 14px;">Author Name</p>
-					</div>
-				</div>
-				<button id="delete-btn" style="background: #00b1fd; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
-				<button id="like-btn" style="background: #c0c0c0; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-left: 10px;">Like</button>
-			</div>
-		</div>
-	</div>
-
 	<!--**********END OF MAIN CONTENT**********-->
-	
-	<script type="text/javascript" src = "/static/js/script.js"></script>
 	<script>
 		function showContent(contentId) {
 			// 隐藏所有内容区域
@@ -451,9 +437,6 @@
 			categories.forEach(function(category) {
 				category.classList.remove('selected');
 			});
-		
-			// 为当前点击的侧边栏项添加选中状态
-			event.currentTarget.classList.add('selected');
 		}
 		
         function redirectToProfile() {
@@ -468,118 +451,12 @@
 		});
 	</script>
 
-	<!--为视频的like和delete添加功能-->
 	<script>
-		document.getElementById("like-btn").addEventListener("click", function () {
-			const videoId = document.getElementById("current-video-id").value;
-		
-			// 如果没有视频 ID，则提示用户
-			if (!videoId) {
-				alert("No video is currently being played!");
-				return;
-			}
-		
-			if (!username) {
-				alert("User is not logged in!");
-				return;
-			}
-		
-			// 发送请求到后端获取 user_id
-			fetch("/get_user_id", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ username: username })
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.user_id) {
-					// 获取到 user_id 后，进行下一步操作（例如，插入喜欢视频记录）
-					const userId = data.user_id;
-		
-					// 发送视频喜欢请求
-					fetch("/add_liked", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							userId: userId,
-							videoId: videoId
-						})
-					})
-					.then(response => response.json())
-					.then(data => {
-						if (data.message === "Success") {
-							alert("点赞成功!");
-						} else {
-							alert("点赞失败!");
-						}
-					});
-				} else {
-					alert("Failed to retrieve user ID!");
-				}
-			})
-			.catch(error => {
-				console.error('Error:', error);
-				alert("An error occurred!");
-			});
-		});
-	</script>
-
-	<script>
-		function redirectToVideoPage(videoId) {
-        window.location.href = "/videoplayer/" + videoId;  // 根据实际路由调整
-    }
-
-		document.getElementById("delete-btn").addEventListener("click", function () {
-			const videoId = document.getElementById("current-video-id").value;
-		
-			// 如果没有视频 ID，则提示用户
-			if (!videoId) {
-				alert("No video is currently being played!");
-				return;
-			}
-		
-			if (!username) {
-				alert("User is not logged in!");
-				return;
-			}
-		
-			// 发送删除视频请求
-			fetch("/delete", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				videoId: videoId
-			})
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.message === "No Authorization"){
-					alert("您无权限删除视频!");
-					location.href = '/'; 
-					location.reload();
-				}
-				else if (data.message === "Not Login"){
-					alert("请先登录!");
-					location.href = '/'; 
-					location.reload();
-				}else{
-					alert("删除成功!");
-					location.href = '/'; 
-					location.reload();
-				}
-			});
-			})
-			.catch(error => {
-				console.error('Error:', error);
-				alert("An error occurred!");
-			});
-	</script>
+		function redirectToVideoPage(videoId, username) {
+			const url = "/videoplayer/" + videoId + "/" + username;
+			window.location.href = url;
+		}
+</script>
 
 </body>
 </html>
